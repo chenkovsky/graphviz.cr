@@ -1,0 +1,13 @@
+name: graphviz
+version: 0.1.0
+
+authors:
+  - chenkovsky <chenkov@yeah.net>
+
+dependencies:
+  matrix:
+    github: Exilor/matrix
+
+crystal: 0.19.4
+
+license: MIT
