@@ -1,6 +1,6 @@
 class GraphViz
   module Type
-    class Color
+    struct GVColor
       COLOR_NAMES = {
         "aliceblue"            => "f0f8ff",
         "antiquewhite"         => "faebd7",
@@ -671,6 +671,53 @@ class GraphViz
         "silver"               => "c0c0c0",
         "teal"                 => "008080",
       }
+      alias RGB = {UInt8, UInt8, UInt8}
+      alias RGBA = {UInt8, UInt8, UInt8, UInt8}
+      alias HSV = {Float64, Float64, Float64}
+
+      HEX_FOR_COLOR_RE = /[0-9a-fA-F]{2}/
+      RGBA_RE          = /^#(#{HEX_FOR_COLOR_RE})(#{HEX_FOR_COLOR_RE})(#{HEX_FOR_COLOR_RE})(#{HEX_FOR_COLOR_RE})?$/
+
+      def initialize(@data : RGB | RGBA | HSV)
+      end
+
+      def self.gv_parse(a)
+        case a
+        when .is_a? GVColor
+          return a
+        when .is_a? Enumerable(Float)
+          data = a.map { |x| x.to_f64 }
+          raise ArgumentError.new "#{a} cannot be used as Color" if data.size != 3 || data.any? { |x| x > 1.0 || x < 0.0 }
+          return GVColor.new ({data[0], data[1], data[2]})
+        when .is_a? Enumerable(_)
+          data = a.map { |x| x.to_i8 }
+          case data.size
+          when 3
+            return GVColor.new ({data[0], data[1], data[2]})
+          when 4
+            return GVColor.new ({data[0], data[1], data[2], data[3]})
+          else
+            raise ArgumentError.new "#{a} cannot be used as Color"
+          end
+        when .is_a? String
+          if a[0] == '#'
+            m = RGBA_RE.match(a)
+            if m
+              return gv_parse [m[1], m[2], [3], m[4]]
+            else
+              raise ArgumentError.new "#{a} cannot be used as Color"
+            end
+          elsif a.includes? ","
+            return gv_parse a.split(",")
+          elsif COLOR_NAMES.has_key? a
+            return GVColor.new a
+          else
+            raise ArgumentError.new "#{a} cannot be used as Color, not in COLOR_NAMES"
+          end
+        else
+          raise ArgumentError.new "#{a} cannot be used as Color"
+        end
+      end
     end
   end
 end
