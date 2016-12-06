@@ -1,6 +1,6 @@
 class GraphViz
-  module Types
-    enum GVPagedir
+  module Type
+    enum GVPageDir
       BL
       BR
       TL
@@ -13,7 +13,7 @@ class GraphViz
         case a
         when .is_a? String
           parse a
-        when .is_a? GVPagedir
+        when .is_a? GVPageDir
           return a
         else
           raise ArgumentError.new "#{a} cannot be used as Pagedir"

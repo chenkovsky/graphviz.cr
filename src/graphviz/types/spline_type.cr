@@ -17,16 +17,16 @@ class GraphViz
       FINAL_SPLINE_MASK = /^#{SPLINE_MASK}(?:\s*;\s*#{SPLINE_MASK})*$/
       FINAL_POINT_MASK  = /^#{POINT_MASK}$/
 
-      def gz_parse(a)
+      def self.gv_parse(a)
         case a
         when .is_a? GVSplineType
           return a
         when .is_a? String
-          unless SPLINE_MASK.match(data).nil?
-            return GVSplineType.new data, true
+          unless SPLINE_MASK.match(a).nil?
+            return GVSplineType.new a, true
           end
-          unless FINAL_POINT_MASK.match(data).nil?
-            return GVSplineType.new data, false
+          unless FINAL_POINT_MASK.match(a).nil?
+            return GVSplineType.new a, false
           end
         end
         raise ArgumentError.new "Invalid spline type value #{a}"

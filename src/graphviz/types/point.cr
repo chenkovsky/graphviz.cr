@@ -11,7 +11,7 @@ class GraphViz
         case a
         when .is_a? GVPoint
           return a
-        when .is_a? Enumerable(_)
+        when .is_a? Enumerable
           data = a.map { |x| x.to_f64 }
           case data.size
           when 2

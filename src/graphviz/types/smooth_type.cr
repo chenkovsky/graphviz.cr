@@ -1,6 +1,6 @@
 class GraphViz
   module Type
-    class GVSmoothType
+    enum GVSmoothType
       None
       Avg_dist
       Graph_dist

@@ -12,12 +12,15 @@ class GraphViz
       def initialize(@style : Style, @seed : String)
       end
 
-      def gz_parse(a)
+      def self.gv_parse(a)
         case a
         when .is_a? GVStartType
           return a
         when .is_a? String
           m = RE.match a
+          if m.nil?
+            raise ArgumentError.new "#{a} cannot be used as GVStartType"
+          end
           GVStartType.new Style.parse(m[1]), m[2]
         end
         raise ArgumentError.new "#{a} cannot be used as GVStartType"

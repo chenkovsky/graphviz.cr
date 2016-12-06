@@ -12,7 +12,7 @@ class GraphViz
           return a
         when .is_a? String
           return GVColorList.new a.split(":").map { |x| GVColor.gv_parse x }
-        when .is_a?(Enumerate(_))
+        when .is_a? Enumerable
           return GVColorList.new a.map { |x| GVColor.gv_parse x }
         else
           raise ArgumentError.new "#{a} cannot be used as ColorList"

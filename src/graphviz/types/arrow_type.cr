@@ -1,5 +1,5 @@
 class GraphViz
-  module Types
+  module Type
     enum GVArrowType
       Normal
       Inv

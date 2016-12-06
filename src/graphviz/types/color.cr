@@ -678,19 +678,43 @@ class GraphViz
       HEX_FOR_COLOR_RE = /[0-9a-fA-F]{2}/
       RGBA_RE          = /^#(#{HEX_FOR_COLOR_RE})(#{HEX_FOR_COLOR_RE})(#{HEX_FOR_COLOR_RE})(#{HEX_FOR_COLOR_RE})?$/
 
-      def initialize(@data : RGB | RGBA | HSV)
+      def initialize(@data : RGB | RGBA | HSV | String)
       end
 
       def self.gv_parse(a)
         case a
         when .is_a? GVColor
           return a
-        when .is_a? Enumerable(Float)
+        when .is_a? Enumerable(Float32)
           data = a.map { |x| x.to_f64 }
           raise ArgumentError.new "#{a} cannot be used as Color" if data.size != 3 || data.any? { |x| x > 1.0 || x < 0.0 }
           return GVColor.new ({data[0], data[1], data[2]})
-        when .is_a? Enumerable(_)
-          data = a.map { |x| x.to_i8 }
+        when .is_a? Enumerable(Float64)
+          data = a.map { |x| x.to_f64 }
+          raise ArgumentError.new "#{a} cannot be used as Color" if data.size != 3 || data.any? { |x| x > 1.0 || x < 0.0 }
+          return GVColor.new ({data[0], data[1], data[2]})
+        when .is_a? Enumerable(String)
+          data = a.map { |x| x.to_u8 }
+          case data.size
+          when 3
+            return GVColor.new ({data[0], data[1], data[2]})
+          when 4
+            return GVColor.new ({data[0], data[1], data[2], data[3]})
+          else
+            raise ArgumentError.new "#{a} cannot be used as Color"
+          end
+        when .is_a? Enumerable(Int32)
+          data = a.map { |x| x.to_u8 }
+          case data.size
+          when 3
+            return GVColor.new ({data[0], data[1], data[2]})
+          when 4
+            return GVColor.new ({data[0], data[1], data[2], data[3]})
+          else
+            raise ArgumentError.new "#{a} cannot be used as Color"
+          end
+        when .is_a? Enumerable(UInt8)
+          data = a.map { |x| x.to_u8 }
           case data.size
           when 3
             return GVColor.new ({data[0], data[1], data[2]})

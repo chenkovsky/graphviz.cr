@@ -1,20 +1,20 @@
 class GraphViz
   module Type
-    struct AddPoint
-      def initialize(@data : Point, @signed : Bool = false)
+    struct GVAddPoint
+      def initialize(@data : GVPoint, @signed : Bool = false)
       end
 
       def self.gv_parse(a)
         case a
-        when .is_a? AddPoint
+        when .is_a? GVAddPoint
           return a
-        when .is_a? Point
-          return AddPoint.new a
+        when .is_a? GVPoint
+          return GVAddPoint.new a
         when .is_a? String
           if a[0] == '+'
-            return AddPoint.new Point.gv_parse(a[1, a.size - 1]), true
+            return GVAddPoint.new GVPoint.gv_parse(a[1, a.size - 1]), true
           else
-            return AddPoint.new Point.gv_parse(a)
+            return GVAddPoint.new GVPoint.gv_parse(a)
           end
         else
           raise ArgumentError.new "#{a} cannot be used as AddPoint"

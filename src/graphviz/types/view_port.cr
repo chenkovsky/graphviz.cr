@@ -8,7 +8,7 @@ class GraphViz
       def initialize(@data : String)
       end
 
-      def self.gz_parse(a)
+      def self.gv_parse(a)
         case a
         when .is_a? GVViewPort
           return a

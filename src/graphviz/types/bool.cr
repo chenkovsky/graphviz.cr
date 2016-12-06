@@ -7,7 +7,7 @@ class GraphViz
       def initialize(@data : Bool)
       end
 
-      def self.gz_parse(a)
+      def self.gv_parse(a)
         case a
         when .is_a? GVBool
           return a

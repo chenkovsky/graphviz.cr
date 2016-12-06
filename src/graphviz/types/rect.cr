@@ -16,7 +16,7 @@ class GraphViz
             return gv_parse a.split(",")
           end
           raise ArgumentError.new "#{a} cannot be used as Rect"
-        when .is_a? Array(_)
+        when .is_a? Array
           if a.size != 4
             raise ArgumentError.new "#{a} cannot be used as Rect"
           end

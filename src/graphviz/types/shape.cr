@@ -1,6 +1,6 @@
 class GraphViz
   module Type
-    class GVShape
+    enum GVShape
       Box
       Polygon
       Ellipse

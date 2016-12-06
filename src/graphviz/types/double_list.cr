@@ -10,7 +10,7 @@ class GraphViz
           return a
         when .is_a? Array(GVDouble)
           return GVDoubleList.new a
-        when .is_a? Enumerable(_)
+        when .is_a? Enumerable
           return GVDoubleList.new a.map { |x| GVDouble.gv_parse x }
         else
           raise ArgumentError.new "#{a} cannot be used as DoubleList"

@@ -13,11 +13,11 @@ class GraphViz
       {:arrowsize, "E", [:GVDouble]},
       {:arowtail, "E", [:GVArrowType]},
       {:bb, "G", [:GVRect]},
-      {:bgcolor, "GC", [:GVColor, :GVColorList]},
+      {:bgcolor, "GC", [:GVColorList]},
       {:center, "G", [:GVBool]},
       {:charset, "G", [:GVString]},
       {:clusterrank, "G", [:GVClusterMode]},
-      {:color, "ENC", [:GVColor, :GVColorList]},
+      {:color, "ENC", [:GVColorList]},
       {:colorscheme, "ENCG", [:GVString]},
       {:comment, "ENG", [:GVString]},
       {:compound, "G", [:GVBool]},
@@ -37,7 +37,7 @@ class GraphViz
       {:edgetooltip, "E", [:GVEscString]},
       {:epsilon, "G", [:GVDouble]},
       {:esep, "G", [:GVAddDouble, :GVAddPoint]},
-      {:fillcolor, "NEC", [:GVColor, :GVColorList]},
+      {:fillcolor, "NEC", [:GVColorList]},
       {:fixedsize, "N", [:GVBool, :GVString]},
       {:fontcolor, "ENGC", [:GVColor]},
       {:fontname, "ENGC", [:GVString]},
@@ -103,7 +103,7 @@ class GraphViz
       {:nojustify, "GCNE", [:GVBool]},
       {:normalize, "G", [:GVDouble, :GVBool]},
       {:notranslate, "G", [:GVBool]},
-      {:nslimit,   "G", [:GVDouble]},
+      {:nslimit, "G", [:GVDouble]},
       {:nslimit1, "G", [:GVDouble]},
       {:ordering, "GN", [:GVString]},
       {:orientation, "N", [:GVDouble]},
@@ -175,10 +175,16 @@ class GraphViz
       {:xlp, "NE", [:GVPoint]},
       {:z, "N", [:GVDouble]},
     ]
-    private G_ATTRS = ATTRS.select { |name, usedby, typ| used_by.includes? "G" }.index_by { |x| x[0] }
-    private E_ATTRS = ATTRS.select { |name, usedby, typ| used_by.includes? "E" }.index_by { |x| x[0] }
-    private N_ATTRS = ATTRS.select { |name, usedby, typ| used_by.includes? "N" }.index_by { |x| x[0] }
-    private C_ATTRS = ATTRS.select { |name, usedby, typ| used_by.includes? "C" }.index_by { |x| x[0] }
+    G_ATTRS = Hash(String, Array(Symbol)).new
+    E_ATTRS = Hash(String, Array(Symbol)).new
+    N_ATTRS = Hash(String, Array(Symbol)).new
+    C_ATTRS = Hash(String, Array(Symbol)).new
+    ATTRS.each do |name, used_by, typ|
+      G_ATTRS[name.to_s] = typ
+      E_ATTRS[name.to_s] = typ
+      N_ATTRS[name.to_s] = typ
+      C_ATTRS[name.to_s] = typ
+    end
 
     getter :data
     @graphviz : GraphViz?
@@ -186,7 +192,7 @@ class GraphViz
     @attributes : Hash(String, Array(Symbol))
 
     def initialize(@graphviz, @name, @attributes)
-      @data = Hash(String, GraphVizType).new
+      @data = Hash(String, Type::GraphVizType).new
     end
 
     delegate :each, to: @data
@@ -199,11 +205,11 @@ class GraphViz
       @data[key]
     end
 
-    def []=(key : String, value : GraphVizType)
+    def []=(key : String, value)
       unless @attributes.has_key? key
-        raise ArgumentError, "#{@name} attribute '#{key}' invalid"
+        raise ArgumentError.new "#{@name} attribute '#{key}' invalid"
       end
-      @data[key] = value
+      @data[key] = Type.gv_parse @attributes[key], value
       gz = @graphviz
       gz.set_position(@name, key, @data[key]) if gz
     end
