@@ -210,8 +210,6 @@ class GraphViz
         raise ArgumentError.new "#{@name} attribute '#{key}' invalid"
       end
       @data[key] = Type.gv_parse @attributes[key], value
-      gz = @graphviz
-      gz.set_position(@name, key, @data[key]) if gz
     end
   end
 end

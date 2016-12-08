@@ -1,23 +1,15 @@
 class GraphViz
   class Node
     getter :neighbors, :incidents
-    @index : Int32?
 
     def initialize(@node_id : String, @parent_graph : GraphViz)
       @neighbors = [] of Node
       @incidents = [] of Node
       @node_attributes = Attrs.new(nil, "node", Attrs::N_ATTRS)
-      @index = nil
     end
 
     def id
       @node_id.clone
-    end
-
-    getter index
-
-    def index=(i)
-      @index = i if @index.nil?
     end
 
     def root_graph
@@ -68,8 +60,6 @@ class GraphViz
     end
 
     getter :parent_graph
-
-    private RESERVED_NAMES = Set(String).new ["node", "edge", "graph", "digraph", "subgraph", "strict"]
 
     def to_gv
       node_id = escape @node_id

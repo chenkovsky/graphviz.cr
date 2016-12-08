@@ -1,51 +1,11 @@
 class GraphViz
   class Edge
-    @node_one_id : Int32
-    @node_two_id : Int32
-    @node_one_port : Int32?
-    @node_two_port : Int32?
-    @index : Int32?
+    # node_one --> node_two
+    @node_one : Node | Tuple(Node, String)
+    @node_two : Node | Tuple(Node, String)
+    @parent_graph : GraphViz
 
-    def initialize(v_node_one : Node, v_node_two : Node, @parent_graph : GraphViz)
-      @node_one_id, @node_one_port = get_node_name_and_port v_node_one
-      @node_two_id, @node_two_port = get_node_name_and_port v_node_two
-      @edge_attributes = Attrs.new(nil, "edge", Attrs::E_ATTRS)
-      unless @parent_graph.directed?
-        (@parent_graph.find_node(@node_one_id) || @parent_graph.add_nodes(@node_one_id)).incidents << (@parent_graph.find_node(@node_two_id) || @parent_graph.add_nodes(@node_two_id))
-        (@parent_graph.find_node(@node_two_id) || @parent_graph.add_nodes(@node_two_id)).neighbors << (@parent_graph.find_node(@node_one_id) || @parent_graph.add_nodes(@node_one_id))
-      end
-      (@parent_graph.find_node(@node_one_id) || @parent_graph.add_nodes(@node_one_id)).neighbors << (@parent_graph.find_node(@node_two_id) || @parent_graph.add_nodes(@node_two_id))
-      (@parent_graph.find_node(@node_two_id) || @parent_graph.add_nodes(@node_two_id)).incidents << (@parent_graph.find_node(@node_one_id) || @parent_graph.add_nodes(@node_one_id))
-    end
-
-    def node_one(with_port = true, escaped = true)
-      if !(!@node_one_port.nil? && with_port)
-        escaped ? escape(@node_one_id) : @node_one_id
-      else
-        escaped ? escape(@node_one_id, force: true) + ":#{@node_one_port}" : "#{@node_one_id}:#{@node_one_port}"
-      end
-    end
-
-    def tail_node(with_port = true, escaped = true)
-      node_one(with_port, escaped)
-    end
-
-    def node_two(with_port = true, escaped = true)
-      if !(!@node_two_port.nil? && with_port)
-        escaped ? escape(@node_two_id) : @node_two_id
-      else
-        escaped ? escape(@node_two_id, force: true) + ":#{@node_two_port}" : "#{@node_two_id}:#{@node_two_port}"
-      end
-    end
-
-    def head_node(with_port = true, escaped = true)
-      node_two(with_port, escaped)
-    end
-
-    getter :index
-
-    def index=(i)
-      @index = i if @index.nil?
+    def initialize(@node_one, @node_two, @parent_graph)
     end
 
     def []=(attr_name, attr_value)
@@ -76,10 +36,6 @@ class GraphViz
       common_graph(node, n).add_edges(n, node)
     end
 
-    def >(node)
-      self << node
-    end
-
     def >>(node)
       node << self
     end
@@ -95,28 +51,40 @@ class GraphViz
       with self yield
     end
 
-    private RESERVED_NAMES = Set(String).new ["node", "edge", "graph", "digraph", "subgraph", "strict"]
+    private def _node_one_s
+      if @node_one.is_a? Node
+        return escape @node_one.as(Node).id
+      else
+        node, port = @node_one.as(Tuple(Node, String))
+        return "#{escape node.id, force: true}:#{port}"
+      end
+    end
+
+    private def _node_two_s
+      if @node_two.is_a? Node
+        return escape @node_two.as(Node).id
+      else
+        node, port = @node_two.as(Tuple(Node, String))
+        return "#{escape node.id, force: true}:#{port}"
+      end
+    end
 
     def to_gv(o_graph_type)
       x_link = " -> "
       if o_graph_type == "graph"
         x_link = " -- "
       end
-      _node_one = node_one
+      _node_one = _node_one_s
       if RESERVED_NAMES.has_key?(_node_one)
         _node_one = "_#{node_one}"
       end
 
-      _node_two = node_two
+      _node_two = _node_two_s
       if RESERVED_NAMES.has_key?(_node_two)
         _node_two = "_#{node_two}"
       end
 
       return "#{_node_one}#{x_link}#{_node_two}#{x_attr};"
-    end
-
-    private def get_node_name_and_port(node)
-      name, port = nil, nil
     end
   end
 end
