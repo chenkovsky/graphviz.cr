@@ -6,37 +6,28 @@ describe GraphViz do
   it "basic" do
     g = GraphViz.new(:G, type: :digraph)
     # Create two nodes
-    hello = g.add_node "Hello"
-    world = g.add_node "World"
+    hello = g.add_node "Hello", label: "你好"
+    world = g.add_node "World", label: "世界"
 
     # Create an edge between the two nodes
-    g.add_edge hello, world
+    edge = g.add_edge hello, world
+    edge[:label] = "边"
+    g[:label] = "example"
 
     # Generate output image
-    g.output png: "hello_world.png"
+    STDERR.puts g.to_gv
   end
 
-  it "with block" do
-    GraphViz.new(:G, type: :digraph) { |g|
-      g.world(label: "World") << g.hello(label: "Hello")
-    }.output(png: "hello_world.png")
-  end
+  # it "with block" do
+  #   GraphViz.new(:G, type: :digraph) { |g|
+  #     g.world(label: "World") << g.hello(label: "Hello")
+  #   }.output(png: "hello_world.png")
+  # end
 
-  it "dsl" do
-    digraph :G do
-      world(label: "World") << hello(label: "Hello")
-      output png: "hello_world.png"
-    end
-  end
-
-  it "read dot" do
-    GraphViz.parse("hello.dot", path: "/usr/local/bin") { |g|
-      g.get_node("Hello") { |n|
-        n[:label] = "Bonjour"
-      }
-      g.get_node("World") { |n|
-        n[:label] = "Le Monde"
-      }
-    }.output(png: "sample.png")
-  end
+  # it "dsl" do
+  #   digraph :G do
+  #     world(label: "World") << hello(label: "Hello")
+  #     output png: "hello_world.png"
+  #   end
+  # end
 end

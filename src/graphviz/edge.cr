@@ -4,8 +4,10 @@ class GraphViz
     @node_one : Node | Tuple(Node, String)
     @node_two : Node | Tuple(Node, String)
     @parent_graph : GraphViz
+    @edge_attributes : Attrs
 
     def initialize(@node_one, @node_two, @parent_graph)
+      @edge_attributes = Attrs.new(nil, "edge", Attrs::E_ATTRS)
     end
 
     def []=(attr_name, attr_value)
@@ -53,38 +55,38 @@ class GraphViz
 
     private def _node_one_s
       if @node_one.is_a? Node
-        return escape @node_one.as(Node).id
+        return GraphViz.escape @node_one.as(Node).id
       else
         node, port = @node_one.as(Tuple(Node, String))
-        return "#{escape node.id, force: true}:#{port}"
+        return "#{GraphViz.escape node.id, force: true}:#{port}"
       end
     end
 
     private def _node_two_s
       if @node_two.is_a? Node
-        return escape @node_two.as(Node).id
+        return GraphViz.escape @node_two.as(Node).id
       else
         node, port = @node_two.as(Tuple(Node, String))
-        return "#{escape node.id, force: true}:#{port}"
+        return "#{GraphViz.escape node.id, force: true}:#{port}"
       end
     end
 
-    def to_gv(o_graph_type)
+    def to_gv(io, o_graph_type)
       x_link = " -> "
       if o_graph_type == "graph"
         x_link = " -- "
       end
       _node_one = _node_one_s
-      if RESERVED_NAMES.has_key?(_node_one)
-        _node_one = "_#{node_one}"
+      if RESERVED_NAMES.includes?(_node_one)
+        _node_one = "_#{_node_one}"
       end
 
       _node_two = _node_two_s
-      if RESERVED_NAMES.has_key?(_node_two)
-        _node_two = "_#{node_two}"
+      if RESERVED_NAMES.includes?(_node_two)
+        _node_two = "_#{_node_two}"
       end
-
-      return "#{_node_one}#{x_link}#{_node_two}#{x_attr};"
+      x_attr = @edge_attributes.data.map { |k, v| "#{k} = #{v.to_gv}" }.join(",")
+      io << "#{_node_one}#{x_link}#{_node_two}[#{x_attr}];"
     end
   end
 end

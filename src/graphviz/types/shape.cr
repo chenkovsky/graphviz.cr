@@ -73,12 +73,18 @@ class GraphViz
         end
       end
 
-      def to_gv
-        ret = self.to_s
+      def to_gv(io)
         unless self == Mdiamond || self == Msquare || self == Mcircle
-          self.to_s.downcase
+          io << to_s.downcase
+        else
+          io << to_s.inspect
         end
-        ret.inspect.gsub("\\\\", "\\")
+      end
+
+      def to_gv
+        String.build do |io|
+          to_gv io
+        end.to_s
       end
     end
   end

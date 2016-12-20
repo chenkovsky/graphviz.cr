@@ -20,6 +20,19 @@ class GraphViz
           raise ArgumentError.new "#{a} cannot be used as AddPoint"
         end
       end
+
+      def to_gv(io)
+        if @signed
+          io << "+"
+        end
+        @data.to_gv io
+      end
+
+      def to_gv
+        String.build do |io|
+          to_gv io
+        end.to_s
+      end
     end
   end
 end

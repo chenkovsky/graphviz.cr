@@ -20,12 +20,14 @@ class GraphViz
         end
       end
 
+      def to_gv(io)
+        io << to_s.inspect
+      end
+
       def to_gv
-        ret = self.to_s
-        unless self == Mdiamond || self == Msquare || self == Mcircle
-          self.to_s.downcase
-        end
-        ret.inspect.gsub("\\\\", "\\")
+        String.build do |io|
+          to_gv io
+        end.to_s
       end
     end
   end

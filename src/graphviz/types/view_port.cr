@@ -19,6 +19,16 @@ class GraphViz
         end
         raise ArgumentError.new "#{a} cannot be used as ViewPort"
       end
+
+      def to_gv(io)
+        io << @data
+      end
+
+      def to_gv
+        String.build do |io|
+          to_gv io
+        end.to_s
+      end
     end
   end
 end

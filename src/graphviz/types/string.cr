@@ -51,7 +51,7 @@ class GraphViz
         end
       end
 
-      def to_gv
+      def to_gv(io)
         html = /^<(.*)>$/m.match(@data)
         if !html.nil?
           xml = "<gv>" + html[1].to_s + "</gv>"
@@ -60,14 +60,20 @@ class GraphViz
             unless doc.text == html[1].to_s
               "<#{html[1]}>"
             else
-              @data.inspect.gsub("\\\\", "\\")
+              io << @data.inspect.gsub("\\\\", "\\")
             end
           rescue e
-            @data.inspect.gsub("\\\\", "\\")
+            io << @data.inspect.gsub("\\\\", "\\")
           end
         else
-          @data.inspect.gsub("\\\\", "\\")
+          io << @data.inspect.gsub("\\\\", "\\")
         end
+      end
+
+      def to_gv
+        String.build do |io|
+          to_gv io
+        end.to_s
       end
     end
   end

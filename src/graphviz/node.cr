@@ -3,8 +3,8 @@ class GraphViz
     getter :neighbors, :incidents
 
     def initialize(@node_id : String, @parent_graph : GraphViz)
-      @neighbors = [] of Node
-      @incidents = [] of Node
+      @neighbors = Set(Node).new
+      @incidents = Set(Node).new
       @node_attributes = Attrs.new(nil, "node", Attrs::N_ATTRS)
     end
 
@@ -61,14 +61,14 @@ class GraphViz
 
     getter :parent_graph
 
-    def to_gv
-      node_id = escape @node_id
+    def to_gv(io)
+      node_id = GraphViz.escape @node_id
       node_id = RESERVED_NAMES.includes?(node_id) ? "_#{node_id}" : node_id
       if @node_attributes.data.has_key?("label") && @node_attributes.data.has_key?("html")
         @node_attributes.data.delete("label")
       end
       x_attr = @node_attributes.data.map { |k, v| "#{k} = #{v.to_gv}" }.join(",")
-      return "#{node_id}[#{x_attr}];"
+      io << "#{node_id}[#{x_attr}];"
     end
   end
 end

@@ -26,8 +26,14 @@ class GraphViz
         end
       end
 
+      def to_gv(io)
+        io << @data.join(',')
+      end
+
       def to_gv
-        @data.join(",")
+        String.build do |io|
+          to_gv io
+        end.to_s
       end
     end
   end

@@ -2,6 +2,12 @@ require "./graphviz/*"
 
 class GraphViz
   @nodes : Hash(String, Node)
+  @edges : Array(Edge)
+  @name : String?
+  @type : String
+  @directed : Bool
+  @sub_graph : Hash(String, GraphViz)
+  @graph_attributes : Attrs
 
   def initialize(name : Symbol | String, **opts)
     initialize(name, opts)
@@ -19,6 +25,16 @@ class GraphViz
 
   def initialize(name : Symbol | String, opts)
     @nodes = Hash(String, Node).new
+    @edges = [] of Edge
+    @name = name.to_s
+    if opts.has_key? :type
+      @type = opts[:type].to_s
+    else
+      @type = "graph"
+    end
+    @directed = @type == "digraph"
+    @sub_graph = Hash(String, GraphViz).new
+    @graph_attributes = Attrs.new(nil, "graph", Attrs::G_ATTRS)
   end
 
   def add_node(node_name : String, **opts)
@@ -58,6 +74,14 @@ class GraphViz
     opts.each do |k, v|
       edge[k.to_s] = v
     end
+    if @directed
+      node_one.incidents << node_two
+      node_two.neighbors << node_one
+    end
+    node_two.incidents << node_one
+    node_one.neighbors << node_two
+
+    @edges << edge
     return edge
   end
 
@@ -133,11 +157,35 @@ class GraphViz
     end
   end
 
-  def output(**opts)
-    output opts
+  def add_graph(g)
+    @sub_graph[g.name] = g
   end
 
-  def output(opts)
+  def to_gv(io)
+    io << "#{@type} #{@name} {"
+    @sub_graph.each do |name, graph|
+      graph.to_gv io
+    end
+    @nodes.each do |name, node|
+      node.to_gv io
+    end
+    @edges.each do |edge|
+      edge.to_gv io, @type
+    end
+    @graph_attributes.data.each do |k, v|
+      io << "#{k} = #{v.to_gv};"
+    end
+    io << "}"
+  end
+
+  def []=(attr_name : String | Symbol, attr_value)
+    @graph_attributes[attr_name.to_s] = attr_value
+  end
+
+  def to_gv
+    String.build do |io|
+      to_gv io
+    end.to_s
   end
 
   macro method_missing(call)

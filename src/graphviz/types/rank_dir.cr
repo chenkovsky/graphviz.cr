@@ -17,8 +17,14 @@ class GraphViz
         end
       end
 
+      def to_gv(io)
+        io << to_s.downcase.inspect
+      end
+
       def to_gv
-        self.to_s.downcase.inspect.gsub("\\\\", "\\")
+        String.build do |io|
+          to_gv io
+        end.to_s
       end
     end
   end

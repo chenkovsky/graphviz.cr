@@ -1,6 +1,6 @@
 # graphviz
 
-TODO: Write a description here
+Generate graphviz dot file with crystal
 
 ## Installation
 
@@ -19,6 +19,19 @@ dependencies:
 
 ```crystal
 require "graphviz"
+
+g = GraphViz.new(:G, type: :digraph)
+# Create two nodes
+hello = g.add_node "Hello", label: "你好"
+world = g.add_node "World", label: "世界"
+
+# Create an edge between the two nodes
+edge = g.add_edge hello, world
+edge[:label] = "边"
+g[:label] = "example"
+
+# Generate output image
+STDERR.puts g.to_gv
 ```
 
 
@@ -38,4 +51,4 @@ TODO: Write development instructions here
 
 ## Contributors
 
-- [[your-github-name]](https://github.com/chenkovsky) chenkovsky - creator, maintainer
+- [chenkovsky](https://github.com/chenkovsky) chenkovsky - creator, maintainer

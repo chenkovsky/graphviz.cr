@@ -32,8 +32,14 @@ class GraphViz
         raise ArgumentError.new "Invalid spline type value #{a}"
       end
 
+      def to_gv(io)
+        io << @data.inspect.gsub("\\\\", "\\")
+      end
+
       def to_gv
-        return @data.inspect.gsub("\\\\", "\\")
+        String.build do |io|
+          to_gv io
+        end.to_s
       end
     end
   end

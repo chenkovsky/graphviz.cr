@@ -673,7 +673,7 @@ class GraphViz
       }
       alias RGB = {UInt8, UInt8, UInt8}
       alias RGBA = {UInt8, UInt8, UInt8, UInt8}
-      alias HSV = {Float64, Float64, Float64}
+      alias HSV = {Float32, Float32, Float32}
 
       HEX_FOR_COLOR_RE = /[0-9a-fA-F]{2}/
       RGBA_RE          = /^#(#{HEX_FOR_COLOR_RE})(#{HEX_FOR_COLOR_RE})(#{HEX_FOR_COLOR_RE})(#{HEX_FOR_COLOR_RE})?$/
@@ -686,11 +686,11 @@ class GraphViz
         when .is_a? GVColor
           return a
         when .is_a? Enumerable(Float32)
-          data = a.map { |x| x.to_f64 }
+          data = a.map { |x| x.to_f }
           raise ArgumentError.new "#{a} cannot be used as Color" if data.size != 3 || data.any? { |x| x > 1.0 || x < 0.0 }
           return GVColor.new ({data[0], data[1], data[2]})
         when .is_a? Enumerable(Float64)
-          data = a.map { |x| x.to_f64 }
+          data = a.map { |x| x.to_f }
           raise ArgumentError.new "#{a} cannot be used as Color" if data.size != 3 || data.any? { |x| x > 1.0 || x < 0.0 }
           return GVColor.new ({data[0], data[1], data[2]})
         when .is_a? Enumerable(String)
@@ -741,6 +741,31 @@ class GraphViz
         else
           raise ArgumentError.new "#{a} cannot be used as Color"
         end
+      end
+
+      def to_gv(io)
+        case @data
+        when .is_a? RGB
+          io << '#'
+          @data.as(RGB).each do |d|
+            io << d.to_s 16
+          end
+        when .is_a? RGBA
+          io << '#'
+          @data.as(RGBA).each do |d|
+            io << d.to_s 16
+          end
+        when .is_a? HSV
+          io << @data.as(HSV).join(',')
+        when .is_a? String
+          io << @data.as(String)
+        end
+      end
+
+      def to_gv
+        String.build do |io|
+          to_gv io
+        end.to_s
       end
     end
   end

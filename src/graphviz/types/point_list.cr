@@ -16,6 +16,20 @@ class GraphViz
           raise ArgumentError.new "#{a} cannot be used as PointList"
         end
       end
+
+      def to_gv(io)
+        @data[0].to_gv io
+        (1...@data.size).each do |idx|
+          io << ' '
+          @data[idx].to_gv io
+        end
+      end
+
+      def to_gv
+        String.build do |io|
+          to_gv io
+        end.to_s
+      end
     end
   end
 end
