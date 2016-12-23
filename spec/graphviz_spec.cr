@@ -15,7 +15,7 @@ describe GraphViz do
     g[:label] = "example"
 
     # Generate output image
-    STDERR.puts g.to_gv
+    STDERR.puts g.to_s
   end
 
   # it "with block" do

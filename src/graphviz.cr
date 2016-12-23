@@ -161,10 +161,10 @@ class GraphViz
     @sub_graph[g.name] = g
   end
 
-  def to_gv(io)
+  def to_s(io)
     io << "#{@type} #{@name} {"
     @sub_graph.each do |name, graph|
-      graph.to_gv io
+      graph.to_s io
     end
     @nodes.each do |name, node|
       node.to_gv io
@@ -182,9 +182,9 @@ class GraphViz
     @graph_attributes[attr_name.to_s] = attr_value
   end
 
-  def to_gv
+  def to_s
     String.build do |io|
-      to_gv io
+      to_s io
     end.to_s
   end
 
