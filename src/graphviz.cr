@@ -23,6 +23,15 @@ class GraphViz
     yield self
   end
 
+  def add_subgraph(name : String, sg : GraphViz)
+    @sub_graph[name] = sg
+  end
+
+  def add_subgraph(name : String, sg : GraphViz, &block)
+    @sub_graph[name] = sg
+    yield @sub_graph[name]
+  end
+
   def initialize(name : Symbol | String, opts)
     @nodes = Hash(String, Node).new
     @edges = [] of Edge
