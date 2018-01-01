@@ -32,7 +32,7 @@ class GraphViz
       end
 
       def to_gv
-        self.inspect.gsub("\\\\", "\\")
+        @data.inspect.gsub("\\\\", "\\")
       end
     end
 
