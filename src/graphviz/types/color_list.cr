@@ -28,9 +28,9 @@ class GraphViz
       end
 
       def to_gv
-        String.build do |io|
+        "\"" + String.build do |io|
           to_gv io
-        end.to_s
+        end.to_s + "\""
       end
     end
   end
