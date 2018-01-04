@@ -23,6 +23,10 @@ class GraphViz
     yield self
   end
 
+  def delete_subgraph(name)
+    @sub_graph.delete(name)
+  end
+
   def add_subgraph(name : String, sg : GraphViz)
     @sub_graph[name] = sg
   end
