@@ -25,14 +25,12 @@ class GraphViz
 
       def to_gv(io)
         io << @port_name
-        io << ':'
-        io << @compass_point
       end
 
       def to_gv
-        String.build do |io|
+        "\"" + String.build do |io|
           to_gv io
-        end.to_s
+        end.to_s + "\""
       end
     end
   end
