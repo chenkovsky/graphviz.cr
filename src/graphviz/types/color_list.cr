@@ -11,12 +11,21 @@ class GraphViz
         when .is_a? GVColorList
           return a
         when .is_a? String
+          if a.includes?(";")
+            return fractional_colorlist(a)
+          end
           return GVColorList.new a.split(":").map { |x| GVColor.gv_parse x }
         when .is_a? Enumerable
           return GVColorList.new a.map { |x| GVColor.gv_parse x }
         else
           raise ArgumentError.new "#{a} cannot be used as ColorList"
         end
+      end
+
+      def self.fractional_colorlist(val)
+        x, temp = val.split(";")
+        y, z = temp.split(":")
+        GVColorList.new [GVColor.new("#{x};#{y.to_f64.round(2)}:#{z}")]
       end
 
       def to_gv(io)
