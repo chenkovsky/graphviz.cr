@@ -125,7 +125,7 @@ class GraphViz
       {:quadtree, "G", [:GVQuadType, :GVBool]},
       {:quantum, "G", [:GVDouble]},
       {:rank, "S", [:GVRankType]},
-      {:rankdir, "G", [:GVRankdir]},
+      {:rankdir, "G", [:GVRankDir]},
       {:ranksep, "G", [:GVDouble, :GVDoubleList]},
       {:ratio, "G", [:GVDouble, :GVString]},
       {:rects, "N", [:GVRect]},
